@@ -1,118 +1,58 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './src/screens/HomeScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
+import DetailsScreen from './src/screens/DetailsScreen';
+import NotificationDetailScreen from './src/screens/NotificationDetailScreen';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export type RootStackParamList = {
+  Home: undefined;
+  Notifications: undefined;
+  Details: { message: string };
+  NotificationDetail: { notificationId: string };
+};
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const Stack = createStackNavigator<RootStackParamList>();
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#007bff',
           },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
           },
-        ]}>
-        {children}
-      </Text>
-    </View>
+        }}
+      >
+        <Stack.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{ title: 'Alert App' }}
+        />
+        <Stack.Screen 
+          name="Notifications" 
+          component={NotificationsScreen}
+          options={{ title: 'Notificaciones' }}
+        />
+        <Stack.Screen 
+          name="Details" 
+          component={DetailsScreen}
+          options={{ title: 'Detalles' }}
+        />
+        <Stack.Screen 
+          name="NotificationDetail" 
+          component={NotificationDetailScreen}
+          options={{ title: 'Detalle de Notificación' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
-
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;

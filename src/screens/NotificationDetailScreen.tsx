@@ -22,7 +22,7 @@ const NotificationDetailScreen: React.FC<NotificationDetailScreenProps> = ({ nav
       <View style={{ flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ fontSize: 18, marginBottom: 20 }}>Notificación no encontrada</Text>
         <TouchableOpacity
-          style={{ padding: 15, backgroundColor: '#007bff' }}
+          style={{ padding: 15, backgroundColor: 'blue' }}
           onPress={() => navigation.goBack()}
         >
           <Text style={{ color: 'white', textAlign: 'center' }}>Volver</Text>
@@ -41,20 +41,20 @@ const NotificationDetailScreen: React.FC<NotificationDetailScreenProps> = ({ nav
         {notification.description}
       </Text>
       
-      <Text style={{ fontSize: 14, color: '#666', marginBottom: 10 }}>
+      <Text style={{ fontSize: 14, color: 'gray', marginBottom: 10 }}>
         Fecha: {new Date(notification.timestamp).toLocaleString()}
       </Text>
       
-      <Text style={{ fontSize: 14, color: '#666', marginBottom: 10 }}>
+      <Text style={{ fontSize: 14, color: 'gray', marginBottom: 10 }}>
         Tipo: {notification.type}
       </Text>
       
-      <Text style={{ fontSize: 14, color: '#666', marginBottom: 20 }}>
+      <Text style={{ fontSize: 14, color: 'gray', marginBottom: 20 }}>
         Prioridad: {notification.priority}
       </Text>
 
       <TouchableOpacity
-        style={{ padding: 15, backgroundColor: '#007bff', marginTop: 'auto' }}
+        style={{ padding: 15, backgroundColor: 'blue', marginTop: 'auto' }}
         onPress={() => navigation.goBack()}
       >
         <Text style={{ color: 'white', textAlign: 'center' }}>Volver</Text>

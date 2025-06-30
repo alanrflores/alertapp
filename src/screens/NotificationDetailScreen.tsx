@@ -43,10 +43,6 @@ const NotificationDetailScreen: React.FC<NotificationDetailScreenProps> = ({
         Fecha: {new Date(notification.timestamp).toLocaleString()}
       </Text>
 
-      <Text style={styles.type}>Tipo: {notification.type}</Text>
-
-      <Text style={styles.priority}>Prioridad: {notification.priority}</Text>
-
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.goBack()}>

@@ -5,8 +5,6 @@ export interface Notification {
   description: string;
   timestamp: Date;
   isRead: boolean;
-  type: string; 
-  priority: string;
   data?: Record<string, any>;
 }
 

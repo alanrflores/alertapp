@@ -60,17 +60,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text style={styles.clearButtonText}>Limpiar Todas</Text>
         </TouchableOpacity>
       )}
-
-      {notifications.length > 0 && (
-        <TouchableOpacity
-          style={styles.viewAllButton}
-          onPress={() => navigation.navigate('Notifications')}
-        >
-          <Text style={styles.viewAllButtonText}>
-            Ver Todas ({notifications.length})
-          </Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
@@ -115,14 +104,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   clearButtonText: {
-    color: 'white',
-    textAlign: 'center',
-  },
-  viewAllButton: {
-    padding: 15,
-    backgroundColor: 'green',
-  },
-  viewAllButtonText: {
     color: 'white',
     textAlign: 'center',
   },

@@ -13,24 +13,18 @@ const serviceState: NotificationServiceState = {
 //notificación de prueba unica
 const TEST_NOTIFICATION = {
   title: 'Notificación',
-  body: 'esta es una prueba d enotificacion',
-  type: 'info',
-  priority: 'medium',
+  body: 'esta es una prueba de notificación',
 };
 
 //creo objeto de notificación
 const createNotification = (
   title: string,
   body: string,
-  type: string = 'info',
-  priority: string = 'medium',
 ) => {
   return {
     id: Date.now().toString(),
     title,
     description: body,
-    type: type,
-    priority: priority,
     timestamp: new Date(),
     isRead: false,
   };
@@ -49,8 +43,6 @@ export const simulateTestNotification = (): void => {
   simulateNotification(
     TEST_NOTIFICATION.title,
     TEST_NOTIFICATION.body,
-    TEST_NOTIFICATION.type,
-    TEST_NOTIFICATION.priority,
   );
 };
 
@@ -58,15 +50,13 @@ export const simulateTestNotification = (): void => {
 export const simulateNotification = (
   title: string,
   body: string,
-  type: string = 'test',
-  priority: string = 'medio',
 ): void => {
   if (!serviceState.addNotification) {
     console.warn('NotificationService no está inicializado');
     return;
   }
 
-  const notification = createNotification(title, body, type, priority);
+  const notification = createNotification(title, body);
 
   //agrego al store
   serviceState.addNotification(notification);

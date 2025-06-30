@@ -7,20 +7,19 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-const DetailsScreen = ({ navigation, route }) => {
-  const { message } = route.params || {};
+const DetailsScreen = ({navigation, route}) => {
+  const {message} = route.params || {};
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Details Screen</Text>
-        <Text style={styles.message}>{message || 'No message'}</Text>
-        
+        <Text style={styles.message}>{message || 'No hay mensaje'}</Text>
+
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.buttonText}>Go Back</Text>
+          onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonText}>Regresar</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },

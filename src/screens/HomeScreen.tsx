@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNotificationStore } from '../store/notificationStore';
 import { 
   initializeNotificationService,
@@ -29,15 +29,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Alert App</Text>
-      
-      {/*mestro la ultima */}
+    <View style={styles.container}>
+      <Text style={styles.title}>Alert App</Text>
+
+      {/*muestro la ultima */}
       {latestNotification ? (
-        <View style={{ padding: 10, backgroundColor: '#f0f0f0', marginBottom: 20 }}>
+        <View style={styles.notificationContainer}>
           <Text style={{ fontWeight: 'bold' }}>{latestNotification.title}</Text>
-          <Text>{latestNotification.description}</Text>
-          <Text style={{ fontSize: 12, color: '#666' }}>
+          <Text style={styles.notificationDescription}>{latestNotification.description}</Text>
+          <Text style={styles.notificationTimestamp}>
             {new Date(latestNotification.timestamp).toLocaleTimeString()}
           </Text>
         </View>
@@ -46,27 +46,27 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       )}
 
       <TouchableOpacity
-        style={{ padding: 15, backgroundColor: 'blue', marginBottom: 10 }}
+        style={styles.button}
         onPress={handleSimulateNotification}
       >
-        <Text style={{ color: 'white', textAlign: 'center' }}>Simular Notificación</Text>
+        <Text style={styles.buttonText}>Simular Notificación</Text>
       </TouchableOpacity>
 
       {notifications.length > 0 && (
         <TouchableOpacity
-          style={{ padding: 15, backgroundColor: 'red', marginBottom: 10 }}
+          style={styles.clearButton}
           onPress={handleClearAll}
         >
-          <Text style={{ color: 'white', textAlign: 'center' }}>Limpiar Todas</Text>
+          <Text style={styles.clearButtonText}>Limpiar Todas</Text>
         </TouchableOpacity>
       )}
 
       {notifications.length > 0 && (
         <TouchableOpacity
-          style={{ padding: 15, backgroundColor: 'green' }}
+          style={styles.viewAllButton}
           onPress={() => navigation.navigate('Notifications')}
         >
-          <Text style={{ color: 'white', textAlign: 'center' }}>
+          <Text style={styles.viewAllButtonText}>
             Ver Todas ({notifications.length})
           </Text>
         </TouchableOpacity>
@@ -74,5 +74,58 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  notificationContainer: {
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    marginBottom: 20,
+  },
+  notificationTitle: {
+    fontWeight: 'bold',
+  },
+  notificationDescription: {
+    marginBottom: 5,
+  },
+  notificationTimestamp: {
+    fontSize: 12,
+    color: '#666',
+  },
+  button: {
+    padding: 15,
+    backgroundColor: 'blue',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  clearButton: {
+    padding: 15,
+    backgroundColor: 'red',
+    marginBottom: 10,
+  },
+  clearButtonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  viewAllButton: {
+    padding: 15,
+    backgroundColor: 'green',
+  },
+  viewAllButtonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+});
 
 export default HomeScreen;

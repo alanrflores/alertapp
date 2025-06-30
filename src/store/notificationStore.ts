@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import {create} from 'zustand';
+import {persist, createJSONStorage} from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Notification, NotificationState } from '../types/notification';
+import {Notification, NotificationState} from '../types/notification';
 
 export const useNotificationStore = create<NotificationState>()(
   persist(
@@ -9,7 +9,7 @@ export const useNotificationStore = create<NotificationState>()(
       notifications: [],
       unreadCount: 0,
 
-      addNotification: (notification) => {
+      addNotification: notification => {
         const newNotification: Notification = {
           ...notification,
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
@@ -17,21 +17,23 @@ export const useNotificationStore = create<NotificationState>()(
           isRead: false,
         };
 
-        set((state) => ({
+        set(state => ({
           notifications: [newNotification, ...state.notifications],
           unreadCount: state.unreadCount + 1,
         }));
       },
 
-      markAsRead: (id) => {
-        set((state) => {
-          const updatedNotifications = state.notifications.map((notification) =>
+      markAsRead: id => {
+        set(state => {
+          const updatedNotifications = state.notifications.map(notification =>
             notification.id === id
-              ? { ...notification, isRead: true }
-              : notification
+              ? {...notification, isRead: true}
+              : notification,
           );
 
-          const unreadCount = updatedNotifications.filter(n => !n.isRead).length;
+          const unreadCount = updatedNotifications.filter(
+            n => !n.isRead,
+          ).length;
 
           return {
             notifications: updatedNotifications,
@@ -41,8 +43,8 @@ export const useNotificationStore = create<NotificationState>()(
       },
 
       markAllAsRead: () => {
-        set((state) => ({
-          notifications: state.notifications.map((notification) => ({
+        set(state => ({
+          notifications: state.notifications.map(notification => ({
             ...notification,
             isRead: true,
           })),
@@ -50,13 +52,18 @@ export const useNotificationStore = create<NotificationState>()(
         }));
       },
 
-      removeNotification: (id) => {
-        set((state) => {
-          const notificationToRemove = state.notifications.find(n => n.id === id);
-          const filteredNotifications = state.notifications.filter(n => n.id !== id);
-          const unreadCount = notificationToRemove && !notificationToRemove.isRead 
-            ? state.unreadCount - 1 
-            : state.unreadCount;
+      removeNotification: id => {
+        set(state => {
+          const notificationToRemove = state.notifications.find(
+            n => n.id === id,
+          );
+          const filteredNotifications = state.notifications.filter(
+            n => n.id !== id,
+          );
+          const unreadCount =
+            notificationToRemove && !notificationToRemove.isRead
+              ? state.unreadCount - 1
+              : state.unreadCount;
 
           return {
             notifications: filteredNotifications,
@@ -72,7 +79,7 @@ export const useNotificationStore = create<NotificationState>()(
         });
       },
 
-      getNotificationById: (id) => {
+      getNotificationById: id => {
         return get().notifications.find(notification => notification.id === id);
       },
     }),
@@ -80,25 +87,26 @@ export const useNotificationStore = create<NotificationState>()(
       name: 'notification-storage',
       storage: createJSONStorage(() => AsyncStorage),
       //solo persistir las notificaciones, recalcular unreadCount al cargar
-      partialize: (state) => ({ 
-        notifications: state.notifications 
+      partialize: state => ({
+        notifications: state.notifications,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => state => {
         if (state) {
           const unreadCount = state.notifications.filter(n => !n.isRead).length;
           state.unreadCount = unreadCount;
         }
       },
-    }
-  )
+    },
+  ),
 );
 
 // Acciones del store
-export const useNotificationActions = () => useNotificationStore(state => ({
-  addNotification: state.addNotification,
-  markAsRead: state.markAsRead,
-  markAllAsRead: state.markAllAsRead,
-  removeNotification: state.removeNotification,
-  clearAllNotifications: state.clearAllNotifications,
-  getNotificationById: state.getNotificationById,
-}));
+export const useNotificationActions = () =>
+  useNotificationStore(state => ({
+    addNotification: state.addNotification,
+    markAsRead: state.markAsRead,
+    markAllAsRead: state.markAllAsRead,
+    removeNotification: state.removeNotification,
+    clearAllNotifications: state.clearAllNotifications,
+    getNotificationById: state.getNotificationById,
+  }));

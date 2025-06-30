@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useNotificationStore } from '../store/notificationStore';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {useNotificationStore} from '../store/notificationStore';
 
 type NotificationDetailScreenProps = {
   navigation: any;
@@ -11,56 +11,66 @@ type NotificationDetailScreenProps = {
   };
 };
 
-const NotificationDetailScreen: React.FC<NotificationDetailScreenProps> = ({ navigation, route }) => {
-  const { notificationId } = route.params;
-  const { getNotificationById } = useNotificationStore();
-  
+const NotificationDetailScreen: React.FC<NotificationDetailScreenProps> = ({
+  navigation,
+  route,
+}) => {
+  const {notificationId} = route.params;
+  const {getNotificationById} = useNotificationStore();
+
   const notification = getNotificationById(notificationId);
 
   if (!notification) {
     return (
-      <View style={{ flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 18, marginBottom: 20 }}>Notificación no encontrada</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Notificación no encontrada</Text>
         <TouchableOpacity
-          style={{ padding: 15, backgroundColor: 'blue' }}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={{ color: 'white', textAlign: 'center' }}>Volver</Text>
+          style={styles.button}
+          onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonBack}>Volver</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
-        {notification.title}
-      </Text>
-      
-      <Text style={{ fontSize: 16, marginBottom: 20, lineHeight: 24 }}>
-        {notification.description}
-      </Text>
-      
-      <Text style={{ fontSize: 14, color: 'gray', marginBottom: 10 }}>
+    <View style={styles.containerTwo}>
+      <Text style={styles.title}>{notification.title}</Text>
+
+      <Text style={styles.description}>{notification.description}</Text>
+
+      <Text style={styles.timestamp}>
         Fecha: {new Date(notification.timestamp).toLocaleString()}
       </Text>
-      
-      <Text style={{ fontSize: 14, color: 'gray', marginBottom: 10 }}>
-        Tipo: {notification.type}
-      </Text>
-      
-      <Text style={{ fontSize: 14, color: 'gray', marginBottom: 20 }}>
-        Prioridad: {notification.priority}
-      </Text>
+
+      <Text style={styles.type}>Tipo: {notification.type}</Text>
+
+      <Text style={styles.priority}>Prioridad: {notification.priority}</Text>
 
       <TouchableOpacity
-        style={{ padding: 15, backgroundColor: 'blue', marginTop: 'auto' }}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={{ color: 'white', textAlign: 'center' }}>Volver</Text>
+        style={styles.button}
+        onPress={() => navigation.goBack()}>
+        <Text style={styles.buttonBack}>Volver</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {fontSize: 20, fontWeight: 'bold', marginBottom: 10},
+  description: {fontSize: 16, marginBottom: 20, lineHeight: 24},
+  timestamp: {fontSize: 14, color: 'gray', marginBottom: 10},
+  type: {fontSize: 14, color: 'gray', marginBottom: 10},
+  priority: {fontSize: 14, color: 'gray', marginBottom: 20},
+  button: {padding: 15, backgroundColor: 'blue', marginTop: 'auto'},
+  buttonBack: {color: 'white', textAlign: 'center'},
+  containerTwo: {flex: 1, padding: 20},
+});
 
 export default NotificationDetailScreen;

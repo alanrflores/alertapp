@@ -6,14 +6,9 @@ import {
   simulateTestNotification
 } from '../services/NotificationService';
 
-type HomeScreenProps = {
-  navigation: any;
-};
-
-const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+const HomeScreen = () => {
   const { addNotification, notifications, clearAllNotifications } = useNotificationStore();
-  const latestNotification = notifications[notifications.length - 1];
-
+ 
   useEffect(() => {
     //limpio todas las notificaciones al inicializar
     clearAllNotifications();
@@ -31,20 +26,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Alert App</Text>
-
-      {/*muestro la ultima */}
-      {latestNotification ? (
-        <View style={styles.notificationContainer}>
-          <Text style={{ fontWeight: 'bold' }}>{latestNotification.title}</Text>
-          <Text style={styles.notificationDescription}>{latestNotification.description}</Text>
-          <Text style={styles.notificationTimestamp}>
-            {new Date(latestNotification.timestamp).toLocaleTimeString()}
-          </Text>
-        </View>
-      ) : (
+      {notifications?.length === 0 && (
         <Text style={{ marginBottom: 20 }}>No hay notificaciones</Text>
       )}
-
       <TouchableOpacity
         style={styles.button}
         onPress={handleSimulateNotification}

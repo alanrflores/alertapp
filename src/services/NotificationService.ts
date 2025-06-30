@@ -62,7 +62,7 @@ export const simulateNotification = (
   serviceState.addNotification(notification);
 
   //mjuestro Alert para simular la noti
-  Alert.alert(title, body, [
+  Alert.alert("Tienes una nueva notificación", "Alan ha enviado una notificación", [
     {
       text: 'OK',
       onPress: () => console.log('Notificación vista'),

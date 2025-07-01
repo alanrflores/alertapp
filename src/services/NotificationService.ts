@@ -1,4 +1,5 @@
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
+import { PushNotificationService } from './PushNotificationService';
 
 interface NotificationServiceState {
   addNotification: ((notification: any) => void) | null;
@@ -10,17 +11,12 @@ const serviceState: NotificationServiceState = {
   isInitialized: false,
 };
 
-//notificación de prueba unica
 const TEST_NOTIFICATION = {
-  title: 'Notificación',
-  body: 'esta es una prueba de notificación',
+  title: 'Tienes una nueva notificación',
+  body: 'Alan te ha enviado una notificación de prueba',
 };
 
-//creo objeto de notificación
-const createNotification = (
-  title: string,
-  body: string,
-) => {
+const createNotification = (title: string, body: string) => {
   return {
     id: Date.now().toString(),
     title,
@@ -30,42 +26,33 @@ const createNotification = (
   };
 };
 
-//inicializo el servicio de notificaciones
 export const initializeNotificationService = (
   addNotificationFn: (notification: any) => void,
 ): void => {
   serviceState.addNotification = addNotificationFn;
   serviceState.isInitialized = true;
+
+  //inicializo el servicio de notificaciones push
+  PushNotificationService.initialize();
 };
 
-//simulo una noti (demanda)
 export const simulateTestNotification = (): void => {
-  simulateNotification(
-    TEST_NOTIFICATION.title,
-    TEST_NOTIFICATION.body,
-  );
-};
+  if (serviceState.addNotification) {
+    const notification = createNotification(
+      TEST_NOTIFICATION.title,
+      TEST_NOTIFICATION.body,
+    );
 
-//simulo una notif específica
-export const simulateNotification = (
-  title: string,
-  body: string,
-): void => {
-  if (!serviceState.addNotification) {
-    console.warn('NotificationService no está inicializado');
-    return;
+    //muestro alert nativo
+    Alert.alert(notification.title, notification.description);
+     
+    //lo agrego al store de zustand
+    serviceState.addNotification(notification);
+
+    //muestro notificación push real del sistema
+    PushNotificationService.showLocalNotification(
+      notification.title,
+      notification.description,
+    );
   }
-
-  const notification = createNotification(title, body);
-
-  //agrego al store
-  serviceState.addNotification(notification);
-
-  //mjuestro Alert para simular la noti
-  Alert.alert("Tienes una nueva notificación", "Alan ha enviado una notificación", [
-    {
-      text: 'OK',
-      onPress: () => console.log('Notificación vista'),
-    },
-  ]);
 };

@@ -1,13 +1,11 @@
-import React from 'react';
+import { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Bell } from 'lucide-react-native';
+import { PushNotificationService } from './src/services/PushNotificationService';
 import HomeScreen from './src/screens/HomeScreen';
 import NotificationsScreen from './src/screens/NotificationsScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 import NotificationDetailScreen from './src/screens/NotificationDetailScreen';
-import { useNotificationStore } from './src/store/notificationStore';
 import NotificationBadge from './src/components/NotificationBadge';
 
 export type RootStackParamList = {
@@ -20,8 +18,26 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
+  const navigationRef = useRef<any>();
+
+  // useEffect(() => {
+  //   // Inicializar notificaciones push cuando la app se monte
+  //   PushNotificationService.initialize();
+  // }, []);
+
+  const onNavigationReady = () => {
+    //configuro navigationRef cuando la navegación esté lista
+    if (navigationRef.current) {
+      PushNotificationService.setNavigationRef(navigationRef.current);
+      console.log('🧭 NavigationRef configurado en App.tsx');
+    }
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer 
+      ref={navigationRef}
+      onReady={onNavigationReady}
+    >
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{

@@ -65,3 +65,7 @@ yarn-error.log
 # testing
 /coverage
 README.md
+ios/AlertApp.xcworkspace/
+ios/Podfile.lock
+ios/AlertApp.xcodeproj/project.pbxproj
+ios/AlertApp/PrivacyInfo.xcprivacy

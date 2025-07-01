@@ -1,79 +1,328 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# ⚙️ Configuración Actual del Proyecto AlertApp
 
-# Getting Started
+## 📋 Estado del Setup de Notificaciones Push
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+### ✅ Archivos Configurados
 
-## Step 1: Start the Metro Server
+#### iOS Nativo:
+- **ios/AlertApp/AppDelegate.m** - Configurado con todos los métodos requeridos
+- **ios/Podfile** - Autolink habilitado
+- **ios/AlertApp.xcodeproj/project.pbxproj** - Capabilities configuradas
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+#### JavaScript:
+- **src/services/PushNotificationService.ts** - Servicio principal implementado
+- **src/store/notificationStore.ts** - Store de Zustand configurado
+- **App.tsx** - Inicialización y navegación configurada
+- **src/screens/HomeScreen.tsx** - Botones de prueba implementados
 
-To start Metro, run the following command from the _root_ of your React Native project:
+### ✅ Funcionalidades Implementadas
 
-```bash
-# using npm
-npm start
+1. **Notificaciones Locales** ✅
+   - Botón verde: Notificaciones inmediatas en primer plano
+   - Botón naranja: Notificaciones con temporizador para background
 
-# OR using Yarn
-yarn start
+2. **Almacenamiento en Zustand** ✅
+   - Agregar notificaciones automáticamente
+   - Badge counter en header
+   - Estado persistente
+
+3. **Configuración iOS Nativa** ✅
+   - AppDelegate.m configurado para mostrar banners en primer plano
+   - Métodos de callback implementados
+   - Permisos de notificación habilitados
+
+### 📱 Bundle ID del Proyecto
+```
+org.reactjs.native.example.AlertApp
 ```
 
-## Step 2: Start your Application
+### 🔍 Debugging
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+Si las notificaciones no funcionan:
 
-### For Android
+1. **Verificar permisos en iOS Simulator:**
+   - Configuración → Notificaciones → AlertApp → Permitir notificaciones ✅
 
-```bash
-# using npm
-npm run android
+2. **Revisar logs en Metro:**
 
-# OR using Yarn
-yarn android
+3. **Verificar app instalada:**
+   ```bash
+   xcrun simctl listapps booted | grep AlertApp
+   ```
+
+4. **Probar payload simple:**
+   ```bash
+   echo '{"aps":{"alert":"Test","sound":"default"}}' | xcrun simctl push booted org.reactjs.native.example.AlertApp -
+   ```
+
+### 📂 Estructura de Archivos de Notificaciones
+
+```
+src/
+├── services/
+│   ├── PushNotificationService.ts    # Servicio principal
+│   └── NotificationService.ts        # Servicio legacy (opcional)
+├── store/
+│   └── notificationStore.ts          # Store de Zustand
+├── types/
+│   └── notification.ts               # Interfaces TypeScript
+└── screens/
+    ├── HomeScreen.tsx                # Botones de prueba
+    ├── NotificationsScreen.tsx       # Lista de notificaciones
+    └── NotificationDetailScreen.tsx  # Detalle individual
+
+ios/AlertApp/
+├── AppDelegate.m                     # Configuración nativa
+└── Info.plist                       # Configuración automática
+
+Testing/
+├── send-test-notification.sh         # Script de prueba
+└── test-notification.json           # Payload de ejemplo
 ```
 
-### For iOS
+----------------------------------------------------------------------------------------
 
-```bash
-# using npm
-npm run ios
+# 🔔 Setup de React Native Push Notifications
 
-# OR using Yarn
-yarn ios
+Esta documentacion explica cómo está configurado el sistema de notificaciones push en la aplicación AlertApp usando `react-native-push-notification`.
+
+## 📦 Dependencias Instaladas
+
+```json
+{
+  "react-native-push-notification": "^8.1.1",
+  "@react-native-community/push-notification-ios": "^1.11.0"
+}
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+### Instalación de dependencias:
+```bash
+npm install react-native-push-notification @react-native-community/push-notification-ios
+cd ios && pod install
+```
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+## ⚙️ Configuración iOS
 
-## Step 3: Modifying your App
+### 1. AppDelegate.m
+El archivo `ios/AlertApp/AppDelegate.m` está configurado con los siguientes imports y métodos:
 
-Now that you have successfully run the app, let's modify it.
+```objective-c
+#import "AppDelegate.h"
+#import <React/RCTBundleURLProvider.h>
+// Imports para notificaciones push
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+@implementation AppDelegate
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  self.moduleName = @"AlertApp";
+  self.initialProps = @{};
 
-## Congratulations! :tada:
+  // Configurar el delegado de notificaciones
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
 
-You've successfully run and modified your React Native App. :partying_face:
+  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
 
-### Now what?
+// Métodos requeridos para notificaciones push
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+// Para notificaciones remotas
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+ [RNCPushNotificationIOS didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
 
-# Troubleshooting
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+ [RNCPushNotificationIOS didFailToRegisterForRemoteNotificationsWithError:error];
+}
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+// Para mostrar notificaciones en PRIMER PLANO
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  // Forzar que SIEMPRE muestre banners, incluso en primer plano
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+}
 
-# Learn More
+// Para manejar el toque de una notificación
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
+{
+  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
+  completionHandler();
+}
 
-To learn more about React Native, take a look at the following resources:
+// Para notificaciones locales (cuando la app está cerrada)
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+ [RNCPushNotificationIOS didReceiveLocalNotification:notification];
+}
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+@end
+```
+
+### 2. Capabilities en Xcode
+En Xcode, en tu target de la app, asegúrate de tener habilitado:
+- **Push Notifications** en la pestaña "Signing & Capabilities"
+
+### 3. Info.plist
+Se agregaron automáticamente las configuraciones necesarias durante la instalación.
+
+## 🔧 Configuración JavaScript
+
+### 1. PushNotificationService.ts
+El servicio principal está en `src/services/PushNotificationService.ts`:
+
+```typescript
+import PushNotification from 'react-native-push-notification';
+import { useNotificationStore } from '../store/notificationStore';
+
+export class PushNotificationService {
+  static configure() {
+    PushNotification.configure({
+      onNotification: function (notification) {
+        // Callback cuando llega una notificación
+        const { addNotification } = useNotificationStore.getState();
+        
+        // Agregar al store de Zustand
+        const notificationData = {
+          title: notification.title || 'Notificación',
+          description: notification.message || notification.body || 'Nueva notificación',
+          data: notification.data || notification.userInfo || {}
+        };
+        
+        if (notification.userInteraction) {
+          // La notificación fue tocada - navegar al detalle
+          // Lógica de navegación aquí
+        } else {
+          // Solo agregar al store
+          addNotification(notificationData);
+        }
+      },
+
+      onRegister: function(token) {
+        console.log('TOKEN:', token);
+      },
+
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+
+      requestPermissions: true,
+      popInitialNotification: true,
+    });
+
+    // Canal para Android
+    PushNotification.createChannel({
+      channelId: "default",
+      channelName: "Default Channel",
+      channelDescription: "Canal por defecto",
+      soundName: "default",
+      importance: 4,
+      vibrate: true,
+    });
+  }
+
+  static initialize() {
+    this.configure();
+    setTimeout(() => {
+      this.requestPermissions();
+    }, 1000);
+  }
+
+  static showLocalNotification(title: string, body: string) {
+    const notification = {
+      id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      title: title,
+      message: body,
+      playSound: true,
+      soundName: 'default',
+      userInfo: {
+        id: `notif_${Date.now()}`,
+        customData: 'test',
+        timestamp: new Date().toISOString(),
+      },
+    };
+    
+    PushNotification.localNotification(notification);
+    
+    // Agregar manualmente al store para notificaciones en primer plano
+    const { addNotification } = useNotificationStore.getState();
+    addNotification({
+      title: notification.title,
+      description: notification.message,
+      data: notification.userInfo
+    });
+  }
+}
+```
+
+### 2. Inicialización en App.tsx
+```typescript
+import { PushNotificationService } from './src/services/PushNotificationService';
+
+const App = () => {
+  const navigationRef = useRef();
+
+  useEffect(() => {
+    // Inicializar notificaciones
+    PushNotificationService.initialize();
+  }, []);
+
+  const onNavigationReady = () => {
+    PushNotificationService.setNavigationRef(navigationRef.current);
+  };
+
+  return (
+    <NavigationContainer ref={navigationRef} onReady={onNavigationReady}>
+      {/* Tu navegación */}
+    </NavigationContainer>
+  );
+};
+```
+
+## 🧪 Testing y Simulación
+
+### 1. Notificaciones Locales (desde la app)
+```typescript
+// Botón en HomeScreen.tsx
+const handleSendNotification = () => {
+  PushNotificationService.showLocalNotification(
+    'Título de prueba',
+    'Mensaje de prueba'
+  );
+};
+```
+
+## 🔍 Troubleshooting
+
+### Problema: Los banners no aparecen
+**Solución:**
+1. Verificar permisos en Configuración → Notificaciones → AlertApp
+2. Asegurar que `willPresentNotification` esté configurado en AppDelegate.m
+3. Verificar que el Bundle ID sea correcto
+
+### Problema: Notificaciones no navegan al detalle
+**Solución:**
+1. Verificar que `navigationRef` esté configurado
+2. Revisar que el callback `onNotification` detecte `userInteraction`
+3. Confirmar que la pantalla de destino existe en el stack de navegación
+
+### Problema: Store de Zustand no se actualiza
+**Solución:**
+1. Agregar notificaciones manualmente cuando la app está en primer plano
+2. Verificar que el callback `onNotification` se ejecute (logs)
+3. Revisar la estructura de datos del payload
+
+- ✅ Almacenamiento automático en Zustand store
+- ✅ Navegación al detalle al tocar notificaciones
+- ✅ Badge counter en el ícono de la app
+- ✅ Notificaciones locales desde botones
+- ✅ IDs únicos para evitar duplicados
+- ✅ Permisos automáticos de notificación
+
+

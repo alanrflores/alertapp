@@ -1,3 +1,4 @@
+export type NotificationType = 'payment' | 'transfer' | 'security' | 'system' | 'default';
 
 export interface Notification {
   id: string;
@@ -5,7 +6,8 @@ export interface Notification {
   description: string;
   timestamp: Date;
   isRead: boolean;
-  data?: Record<string, any>;
+  type?: NotificationType; 
+  data?: any;
 }
 
 export interface NotificationState {

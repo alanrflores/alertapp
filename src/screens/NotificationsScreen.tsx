@@ -6,10 +6,8 @@ type NotificationsScreenProps = {
   navigation: any;
 };
 
-const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
-  navigation,
-}) => {
-  const {notifications, markAsRead} = useNotificationStore();
+export default function NotificationsScreen({ navigation }: NotificationsScreenProps) {
+  const { notifications, markAsRead } = useNotificationStore();
 
   const handleNotificationPress = (notification: any) => {
     if (!notification.isRead) {
@@ -108,4 +106,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationsScreen;

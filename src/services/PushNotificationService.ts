@@ -1,5 +1,6 @@
 import PushNotification from 'react-native-push-notification';
 import { useNotificationStore } from '../store/notificationStore';
+import { formatBriefTimestamp } from '../utils/dateUtils';
 
 //variable para la referencia de navegación
 let navigationRef: any = null;
@@ -7,7 +8,7 @@ let navigationRef: any = null;
 export class PushNotificationService {
   static setNavigationRef(ref: any) {
     navigationRef = ref;
-    console.log('🧭 NavigationRef configurado:', !!ref);
+    console.log('NavigationRef configurado:', !!ref);
   }
 
   static configure() {
@@ -19,9 +20,33 @@ export class PushNotificationService {
         //agrego al store
         const { addNotification } = useNotificationStore.getState();
         
+        //determino tipo basado en el título o userInfo
+        let notificationType = 'default';
+        const title = notification.title || 'Notificación';
+        const titleLower = title.toLowerCase();
+        
+        //verifico si el tipo viene en userInfo
+        if (notification.userInfo?.type) {
+          notificationType = notification.userInfo.type;
+        } else if (notification.data?.type) {
+          notificationType = notification.data.type;
+        } else {
+          // si no, lo determino por el título
+          if (titleLower.includes('pago') || titleLower.includes('cobro') || titleLower.includes('depósito')) {
+            notificationType = 'payment';
+          } else if (titleLower.includes('transferencia') || titleLower.includes('movimiento') || titleLower.includes('bancario')) {
+            notificationType = 'transfer';
+          } else if (titleLower.includes('seguridad') || titleLower.includes('alerta') || titleLower.includes('sesión') || titleLower.includes('dispositivo')) {
+            notificationType = 'security';
+          } else if (titleLower.includes('sistema') || titleLower.includes('actualización') || titleLower.includes('mantenimiento')) {
+            notificationType = 'system';
+          }
+        }
+        
         const notificationData = {
-          title: notification.title || 'Notificación',
+          title: title,
           description: notification.message || notification.body || 'Nueva notificación',
+          type: notificationType as any,
           data: notification.data || notification.userInfo || notification.customData || {}
         };
         
@@ -44,11 +69,11 @@ export class PushNotificationService {
           let notificationId;
           if (existingNotification) {
             notificationId = existingNotification.id;
-            console.log('📋 Notificación encontrada en store:', notificationId);
+            console.log('Notificación encontrada en store:', notificationId);
           } else {
             //no existe, crearla en el store
             addNotification(notificationData);
-            console.log('📝 Nueva notificación creada en store por toque');
+            console.log('Nueva notificación creada en store por toque');
             
             
             const { notifications: updatedNotifications } = useNotificationStore.getState();
@@ -134,8 +159,22 @@ export class PushNotificationService {
   }
 
   static showLocalNotification(title: string, body: string) {
-    console.log('Enviando notificación INMEDIATA:', title, body);
+    console.log('Enviando notificación local INMEDIATA:', title, body);
     
+    //determino tipo basado en el título de manera más robusta
+    let notificationType = 'default';
+    const titleLower = title.toLowerCase();
+    
+    if (titleLower.includes('pago') || titleLower.includes('cobro') || titleLower.includes('depósito')) {
+      notificationType = 'payment';
+    } else if (titleLower.includes('transferencia') || titleLower.includes('movimiento') || titleLower.includes('bancario')) {
+      notificationType = 'transfer';
+    } else if (titleLower.includes('seguridad') || titleLower.includes('alerta') || titleLower.includes('sesión') || titleLower.includes('dispositivo')) {
+      notificationType = 'security';
+    } else if (titleLower.includes('sistema') || titleLower.includes('actualización') || titleLower.includes('mantenimiento')) {
+      notificationType = 'system';
+    }
+
     const randomId = Math.random().toString(36).substr(2, 9);
     const timestamp = new Date().getSeconds();
     
@@ -144,7 +183,7 @@ export class PushNotificationService {
       id: `local_${Date.now()}_${randomId}`,
 
       title: `${title} #${timestamp}`,
-      message: `${body} [${randomId}]`,
+      message: `${body}`,
       
       //config básica
       channelId: 'default',
@@ -165,7 +204,8 @@ export class PushNotificationService {
         id: `notif_${Date.now()}_${randomId}`,
         customData: 'test',
         timestamp: new Date().toISOString(),
-        originalTitle: title
+        originalTitle: title,
+        type: notificationType
       },
       
       //para iOS
@@ -186,10 +226,11 @@ export class PushNotificationService {
       const notificationData = {
         title: notification.title,
         description: notification.message,
+        type: notificationType as any,
         data: notification.userInfo || {}
       };
       addNotification(notificationData);
-      console.log('Notificación agregada manualmente al store');
+      console.log('Notificación agregada manualmente al store con tipo:', notificationType);
       
     } catch (error) {
       console.log('Error enviando notificación inmediata:', error);
@@ -199,6 +240,20 @@ export class PushNotificationService {
   static scheduleLocalNotification(title: string, body: string, seconds: number = 3) {
     console.log(`Programando notificación para ${seconds} segundos...`);
     
+    //determino tipo basado en el título de manera más robusta
+    let notificationType = 'default';
+    const titleLower = title.toLowerCase();
+    
+    if (titleLower.includes('pago') || titleLower.includes('cobro') || titleLower.includes('depósito')) {
+      notificationType = 'payment';
+    } else if (titleLower.includes('transferencia') || titleLower.includes('movimiento') || titleLower.includes('bancario')) {
+      notificationType = 'transfer';
+    } else if (titleLower.includes('seguridad') || titleLower.includes('alerta') || titleLower.includes('sesión') || titleLower.includes('dispositivo')) {
+      notificationType = 'security';
+    } else if (titleLower.includes('sistema') || titleLower.includes('actualización') || titleLower.includes('mantenimiento')) {
+      notificationType = 'system';
+    }
+    
     const randomId = Math.random().toString(36).substr(2, 9);
     const timestamp = new Date().getSeconds();
     
@@ -206,7 +261,7 @@ export class PushNotificationService {
       id: `scheduled_${Date.now()}_${randomId}`,
       channelId: 'default',
       title: `${title} #${timestamp}`,
-      message: `${body} [${randomId}]`,
+      message: `${body}`,
       //agrego más tiempo para que pueda salir de la app
       date: new Date(Date.now() + (seconds * 1000)),
       playSound: true,
@@ -220,8 +275,9 @@ export class PushNotificationService {
       userInfo: {
         id: `scheduled_${Date.now()}_${randomId}`,
         customData: 'test',
-        timestamp: new Date().toISOString(),
-        originalTitle: title
+        timestamp: formatBriefTimestamp(new Date().toISOString()),
+        originalTitle: title,
+        type: notificationType
       }
     };
     
@@ -251,6 +307,20 @@ export class PushNotificationService {
   static showImmediateNotification(title: string, body: string) {
     console.log('enviando notificación INMEDIATA para background...');
     
+    //determino tipo basado en el título de manera más robusta
+    let notificationType = 'default';
+    const titleLower = title.toLowerCase();
+    
+    if (titleLower.includes('pago') || titleLower.includes('cobro') || titleLower.includes('depósito')) {
+      notificationType = 'payment';
+    } else if (titleLower.includes('transferencia') || titleLower.includes('movimiento') || titleLower.includes('bancario')) {
+      notificationType = 'transfer';
+    } else if (titleLower.includes('seguridad') || titleLower.includes('alerta') || titleLower.includes('sesión') || titleLower.includes('dispositivo')) {
+      notificationType = 'security';
+    } else if (titleLower.includes('sistema') || titleLower.includes('actualización') || titleLower.includes('mantenimiento')) {
+      notificationType = 'system';
+    }
+    
     const randomId = Math.random().toString(36).substr(2, 9);
     const timestamp = new Date().getSeconds();
     
@@ -269,8 +339,9 @@ export class PushNotificationService {
       userInfo: {
         id: `immediate_${Date.now()}_${randomId}`,
         customData: 'test',
-        timestamp: new Date().toISOString(),
-        originalTitle: title
+        timestamp: formatBriefTimestamp(new Date().toISOString()),
+        originalTitle: title,
+        type: notificationType
       },
     };
     
@@ -286,10 +357,11 @@ export class PushNotificationService {
       const notificationData = {
         title: notification.title,
         description: notification.message,
+        type: notificationType as any,
         data: notification.userInfo || {}
       };
       addNotification(notificationData);
-      console.log('Notificación de background agregada manualmente al store');
+      console.log('Notificación de background agregada manualmente al store con tipo:', notificationType);
       
     } catch (error) {
       console.log('Error enviando notificación inmediata:', error);

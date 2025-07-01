@@ -1,29 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import PushNotification from 'react-native-push-notification';
 import { useNotificationStore } from '../store/notificationStore';
-import { 
-  initializeNotificationService,
-  simulateTestNotification
-} from '../services/NotificationService';
 import { PushNotificationService } from '../services/PushNotificationService';
 
 const HomeScreen = () => {
-  // Corregir: usar selectores específicos
   const notifications = useNotificationStore(state => state.notifications);
   const addNotification = useNotificationStore(state => state.addNotification);
   const clearAllNotifications = useNotificationStore(state => state.clearAllNotifications);
   
-  // Obtener la última notificación
+  //obtener la última notificación
   const latestNotification = notifications[notifications.length - 1];
   
   const serviceInitialized = useRef(false);
   
-    useEffect(() => {
-    //inicializo notificaciones push cuando la app se monte
-    PushNotificationService.initialize();
-  }, []);
-
   // useEffect(() => {
   //   // Corregir: solo inicializar una vez
   //   if (!serviceInitialized.current) {

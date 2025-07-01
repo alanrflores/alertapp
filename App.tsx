@@ -20,10 +20,10 @@ const Stack = createStackNavigator<RootStackParamList>();
 const App = () => {
   const navigationRef = useRef<any>();
 
-  // useEffect(() => {
-  //   // Inicializar notificaciones push cuando la app se monte
-  //   PushNotificationService.initialize();
-  // }, []);
+  useEffect(() => {
+    //inicializo notificaciones push cuando la app se monte
+    PushNotificationService.initialize();
+  }, []);
 
   const onNavigationReady = () => {
     //configuro navigationRef cuando la navegación esté lista
